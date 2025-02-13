@@ -5,9 +5,9 @@
 /// </summary>
 public static class ServiceDefinitions
 {
-	public const string ServiceName = "My WinService Template";
-	public const string EventLogSource = "WinService Template";
-	public const string EventLogName = "WinService Template Events";
+	public const string ServiceName = "Jubatus Project WinService";
+	public const string EventLogSource = "Windows Service Base";
+	public const string EventLogName = "Windows Service Base Events";
 }
 
 /// <summary>

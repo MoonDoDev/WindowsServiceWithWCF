@@ -6,10 +6,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>dotnet-WindowsServiceBase-b7c3169e-baa4-49cc-821a-292307198e46</UserSecretsId>
 		<EnableComHosting>true</EnableComHosting>
-		<Version>1.0.1.0</Version>
+		<Version>1.0.1.28</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CoreWCF.Http" Version="1.7.0" />
+		<PackageReference Include="CoreWCF.Primitives" Version="1.7.0" />
+		<PackageReference Include="CoreWCF.ConfigurationManager" Version="1.7.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.1" />
 		<PackageReference Include="NReco.Logging.File" Version="1.2.2" />

@@ -3,12 +3,26 @@ namespace WindowsServiceBase;
 /// <summary>
 /// 
 /// </summary>
-/// <param name="serviceProcess"></param>
-/// <param name="logger"></param>
-public sealed class ServiceBackWorker(
-	ServiceProcessBase serviceProcess,
-	ILogger<ServiceBackWorker> logger ) : BackgroundService
+public sealed class ServiceBackWorker : BackgroundService
 {
+	/// <summary>
+	/// 
+	/// </summary>
+	private readonly ServiceProcessBase _serviceProcess;
+	private readonly ILogger<ServiceBackWorker> _logger;
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="serviceProcess"></param>
+	/// <param name="logger"></param>
+	public ServiceBackWorker( ServiceProcessBase serviceProcess, ILogger<ServiceBackWorker> logger )
+	{
+		logger.LogInformation( new EventId( EventLogIds.InfoStartService ), "WkrService Created" );
+		_serviceProcess = serviceProcess;
+		_logger = logger;
+	}
+
 	/// <summary>
 	/// => Para instalar el Servicio en la Consola de Servicios Windows:
 	///    => sc.exe create "Windows Service Template" binpath= "C:\..\WindowsServiceTemplate.exe"
@@ -19,7 +33,7 @@ public sealed class ServiceBackWorker(
 	/// <returns></returns>
 	public override async Task StartAsync( CancellationToken cancellationToken )
 	{
-		logger.LogInformation( new EventId( EventLogIds.InfoStartService ), "Service Started" );
+		_logger.LogInformation( new EventId( EventLogIds.InfoStartService ), "WkrService Started" );
 		await base.StartAsync( cancellationToken );
 	}
 
@@ -31,8 +45,8 @@ public sealed class ServiceBackWorker(
 	/// <returns></returns>
 	public override async Task StopAsync( CancellationToken cancellationToken )
 	{
-		logger.LogInformation( new EventId( EventLogIds.InfoStopService ), "Service Stopped" );
-		await serviceProcess.StopServiceAsync( cancellationToken );
+		_logger.LogInformation( new EventId( EventLogIds.InfoStopService ), "WkrService Stopped" );
+		await _serviceProcess.StopServiceAsync( cancellationToken );
 		await base.StopAsync( cancellationToken );
 	}
 
@@ -43,16 +57,23 @@ public sealed class ServiceBackWorker(
 	/// <returns></returns>
 	protected override async Task ExecuteAsync( CancellationToken stoppingToken )
 	{
-		try
+		while ( !stoppingToken.IsCancellationRequested )
 		{
-			await serviceProcess.ExecuteServiceAsync( stoppingToken );
-		}
-		catch ( Exception ex )
-		{
-			logger.LogError( new EventId( EventLogIds.GeneralErrorException ), ex,
-				"ExecuteAsync( Throws an exception: {Message})", ex.Message );
+			try
+			{
+				await _serviceProcess.ExecuteServiceAsync( stoppingToken );
+			}
+			catch ( TaskCanceledException )
+			{
+				break;
+			}
+			catch ( Exception ex )
+			{
+				_logger.LogError( new EventId( EventLogIds.GeneralErrorException ), ex,
+					"ExecuteAsync( Throws an exception: {Message})", ex.Message );
 
-			Environment.Exit( 1 );
+				Environment.Exit( 1 );
+			}
 		}
 	}
 }

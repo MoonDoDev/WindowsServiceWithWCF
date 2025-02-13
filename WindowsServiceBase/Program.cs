@@ -35,8 +35,11 @@ builder.Services.AddSingleton<ServiceProcessBase>()
 var appSettings = builder.Configuration.GetSection( nameof( ServiceSettings ) ).Get<ServiceSettings>();
 ArgumentNullException.ThrowIfNull( appSettings, nameof( appSettings ) );
 
-builder.Logging.AddFile( "{0}win-service-base({1:dd}-{1:MM}-{1:yyyy}).log", fileLoggerOpts =>
-	fileLoggerOpts.FormatLogFileName = fName => string.Format( fName, appSettings.LogPathName, DateTime.Now ) );
+if ( appSettings.CreateLogFile )
+{
+	builder.Logging.AddFile( "{0}jubatusproject-winservice-{1:dd}-{1:MM}-{1:yyyy}.log", fileLoggerOpts =>
+		fileLoggerOpts.FormatLogFileName = fName => string.Format( fName, appSettings.LogPathName, DateTime.Now ) );
+}
 
 var host = builder.Build();
 host.Run();

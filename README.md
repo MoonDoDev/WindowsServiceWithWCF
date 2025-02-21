@@ -24,17 +24,18 @@ dotnet add package Microsoft.Extensions.Hosting.WindowsServices
 ```
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>dotnet-WindowsServiceBase-b7c3169e-baa4-49cc-821a-292307198e46</UserSecretsId>
-	</PropertyGroup>
+   <PropertyGroup>
+      <TargetFramework>net8.0-windows</TargetFramework>
+      <Nullable>enable</Nullable>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <UserSecretsId>dotnet-WindowsServiceBase-b7c3169e-baa4-49cc-821a-292307198e46</UserSecretsId>
+   </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.1" />
-	</ItemGroup>
+   <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.1" />
+   </ItemGroup>
+   
 </Project>
 ```
 - [x]  Creamos la clase **ServiceProcessBase**, la cual contendrá el código que ejecutará nuestro Servicio Windows:
@@ -43,13 +44,13 @@ namespace WindowsServiceBase;
 
 public sealed class ServiceProcessBase
 {
-	private readonly ServiceSettings? _appSettings;
-	private readonly ILogger<ServiceProcessBase> _logger;
+   private readonly ServiceSettings? _appSettings;
+   private readonly ILogger<ServiceProcessBase> _logger;
 
-	public ServiceProcessBase( ... )
-	{
-        ...
-	}
+   public ServiceProcessBase( ... )
+   {
+      ...
+   }
 }
 ```
 - [x]  Renombramos la clase **Worker** y el archivo *.cs, por **ServiceBackWorker**:
@@ -58,32 +59,32 @@ namespace WindowsServiceBase;
 
 public sealed class ServiceBackWorker : BackgroundService
 {
-	private readonly ServiceProcessBase _serviceProcess;
-	private readonly ILogger<ServiceBackWorker> _logger;
+   private readonly ServiceProcessBase _serviceProcess;
+   private readonly ILogger<ServiceBackWorker> _logger;
 
-	public ServiceBackWorker( ... )
-	{
-        ...
-	}
+   public ServiceBackWorker( ... )
+   {
+      ...
+   }
 }
 ```
 - [x]  Actualizamos el archivo de configuración **appsettings.json**, agregando los parámetros requeridos para el manejo del **EventLog** en el Servicio Windows:
 ```
 {
-	"Logging": {
-		"LogLevel": {
-			"Default": "Warning",
-			"WindowsServiceBase": "Trace"
-		},
-		"EventLog": {
-			"SourceName": "Windows Service Base",
-			"LogName": "Windows Service Base Events",
-			"LogLevel": {
-				"Default": "Warning",
-				"WindowsServiceBase": "Trace"
-			}
-		}
-	}
+   "Logging": {
+      "LogLevel": {
+         "Default": "Warning",
+         "WindowsServiceBase": "Trace"
+      },
+      "EventLog": {
+         "SourceName": "Windows Service Base",
+         "LogName": "Windows Service Base Events",
+         "LogLevel": {
+            "Default": "Warning",
+            "WindowsServiceBase": "Trace"
+         }
+      }
+   }
 }
 ```
 - [x]  Actualizamos la clase **Program**:
@@ -113,74 +114,74 @@ dotnet add package CoreWCF.ConfigurationManager
 [ServiceContract]
 public interface IServiceTemplate
 {
-	[OperationContract]
-	Result<ServiceStatus> GetServiceStatus();
+   [OperationContract]
+   Result<ServiceStatus> GetServiceStatus();
 
-    [...]
+   [...]
 }
 
 [DataContract]
 public record ServiceStatus
 {
-	[DataMember]
-	public int StatusCode { get; set; }
+   [DataMember]
+   public int StatusCode { get; set; }
 
-    [...]
+   [...]
 }
 ```
 - [x]  Creamos la clase que implementa la Interface creada, con la funcionalidad de los métodos que estamos exponiendo:
 ```
 public class ServiceTemplate : IServiceTemplate
 {
-    [...]
+   [...]
 }
 ```
 - [x]  Creamos el archivo de configuración **WebService.config** para hospedar el Servicio WCF:
 ```
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
-	<system.serviceModel>
-		<behaviors>
-			<serviceBehaviors>
-				<behavior name="ServiceBehavior">
-					<serviceMetadata httpGetEnabled="true" httpsGetEnabled="true"/>
-					<serviceDebug includeExceptionDetailInFaults="true"/>
-				</behavior>
-			</serviceBehaviors>
-		</behaviors>
-        <services>
-            [...]
-        </services>
-		<bindings>
-			<basicHttpBinding>
-				<binding name="basicHttpBindingConfiguration">
-					<security mode="Transport">
-						<transport clientCredentialType="None"/>
-					</security>
-				</binding>
-			</basicHttpBinding>
-		</bindings>
-	</system.serviceModel>
+   <system.serviceModel>
+      <behaviors>
+         <serviceBehaviors>
+            <behavior name="ServiceBehavior">
+               <serviceMetadata httpGetEnabled="true" httpsGetEnabled="true"/>
+               <serviceDebug includeExceptionDetailInFaults="true"/>
+            </behavior>
+         </serviceBehaviors>
+      </behaviors>
+      <services>
+         [...]
+      </services>
+      <bindings>
+         <basicHttpBinding>
+            <binding name="basicHttpBindingConfiguration">
+               <security mode="Transport">
+                  <transport clientCredentialType="None"/>
+               </security>
+            </binding>
+         </basicHttpBinding>
+      </bindings>
+   </system.serviceModel>
 </configuration>
 ```
 - [x]  Actualizamos la clase base del Servicio Windows, para crear el método que nos permitirá hospedar el Servicio WCF:
 ```
 private void CreateWCFServiceInstance()
 {
-    var builder = WebApplication.CreateBuilder();
+   var builder = WebApplication.CreateBuilder();
 
-    builder.Logging.AddEventLog( elSettings =>
-    {
-        elSettings.SourceName = ServiceDefinitions.EventLogSource;
-        elSettings.LogName = ServiceDefinitions.EventLogName;
-    } );
+   builder.Logging.AddEventLog( elSettings =>
+   {
+      elSettings.SourceName = ServiceDefinitions.EventLogSource;
+      elSettings.LogName = ServiceDefinitions.EventLogName;
+   } );
 
-    builder.WebHost.ConfigureKestrel( ( context, options ) =>
-    {
-        [...]
-    }
+   builder.WebHost.ConfigureKestrel( ( context, options ) =>
+   {
+      [...]
+   }
 
-    [...]
+   [...]
 }
 ```
 ### Configuramos el Kestrel e iniciamos el Servicio:
@@ -189,8 +190,8 @@ Para este punto es importante contar con el archivo (*.pfx) el cual corresponde 
 ```
 options.ListenAnyIP( 443, listenOptions =>
 {
-    listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-    listenOptions.UseHttps( "Certificado.pfx", "1234" );
+   listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+   listenOptions.UseHttps( "Certificado.pfx", "1234" );
 } );
 
 ```

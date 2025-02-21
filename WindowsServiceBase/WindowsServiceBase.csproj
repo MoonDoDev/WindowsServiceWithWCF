@@ -6,6 +6,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>dotnet-WindowsServiceBase-b7c3169e-baa4-49cc-821a-292307198e46</UserSecretsId>
 		<EnableComHosting>true</EnableComHosting>
+		<OutputType>exe</OutputType>
+		<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PlatformTarget>x64</PlatformTarget>
 		<Version>1.0.1.28</Version>
 	</PropertyGroup>
 

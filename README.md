@@ -87,7 +87,7 @@ public sealed class ServiceBackWorker : BackgroundService
    }
 }
 ```
-- [x]  Actualizamos la clase **Program**:
+- [x]  Actualizamos el archivo **Program.cs**:
 ```
 var builder = Host.CreateApplicationBuilder( args );
 
@@ -198,12 +198,12 @@ options.ListenAnyIP( 443, listenOptions =>
 - [x]  Instalamos nuestro Servicio Windows en la Consola de Servicios:
 Para instalar el Servicio Windows en la Consola, debemos abrir una ventana de línea de comandos con privilegios de Admin, y allí ejecutar el siguiente comando:
 ```
-sc.exe create "Service Name" binpath= "C:\Projects\WindowsServiceWithWCF\Published\WindowsServiceBase.exe"
+sc.exe create "Service Name" binpath= "C:\Projects\Published\WindowsServiceBase.exe"
 ```
 Después de tener el Servicio Windows instalado, abrimos la Consola de Servicios Windows, lo ubicamos con su nombre y lo iniciamos. Si el Servicio Windows inicia sin problemas, el Servicio WCF ya debería estar disponible para probarlo en un navegador, digitando la dirección HTTPS que le configuramos.
 
 > [!NOTE]
-> - Para desplegar y probar este proyecto en mi máquina de trabajo, fue necesario generar un certificado SSL de pruebas con la ayuda de la herramienta [**OpenSSL**](https://www.openssl.org/), y con cierto proceso, el cual está disponible en Internet, generar el archivo **Certificado.pfx** partiendo de los archivos **Certificado.crt** y **Certificado.key**.   
+> - Para desplegar y probar este proyecto en mi máquina de trabajo, fue necesario generar un certificado SSL de pruebas con la ayuda de la herramienta [**OpenSSL**](https://www.openssl.org/), y con cierto proceso, el cual está disponible en Internet, generamos el archivo **Certificado.pfx**, teniendo como base los archivos **Certificado.crt** y **Certificado.key**.
 > - Si tienes alguna inquietud al respecto, me puedes contactar, y con gusto te apoyo en tus proyectos.
 
 ---------
